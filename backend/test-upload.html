@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Product Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        #status {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h2>Test Product Upload</h2>
+    <form id="uploadForm">
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" name="name" value="testing name" required>
+        </div>
+        <div class="form-group">
+            <label>Description:</label>
+            <input type="text" name="description" value="testing descrip" required>
+        </div>
+        <div class="form-group">
+            <label>Price:</label>
+            <input type="number" name="price" value="10" required>
+        </div>
+        <div class="form-group">
+            <label>Category:</label>
+            <input type="text" name="category" value="Men" required>
+        </div>
+        <div class="form-group">
+            <label>SubCategory:</label>
+            <input type="text" name="subCategory" value="TopWear" required>
+        </div>
+        <div class="form-group">
+            <label>Size:</label>
+            <input type="text" name="size" value='["L"]' required>
+        </div>
+        <div class="form-group">
+            <label>Bestseller:</label>
+            <input type="text" name="bestseller" value="true" required>
+        </div>
+        <div class="form-group">
+            <label>Image 1:</label>
+            <input type="file" name="image1" accept="image/*" required>
+        </div>
+        <div class="form-group">
+            <label>Image 2:</label>
+            <input type="file" name="image2" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label>Image 3:</label>
+            <input type="file" name="image3" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label>Image 4:</label>
+            <input type="file" name="image4" accept="image/*">
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+    <div id="status"></div>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            
+            // Show what's being sent
+            statusDiv.innerHTML = '<h3>Sending Data:</h3>';
+            for (let pair of formData.entries()) {
+                if (pair[1] instanceof File) {
+                    statusDiv.innerHTML += `<div>File ${pair[0]}: ${pair[1].name} (${pair[1].size} bytes)</div>`;
+                } else {
+                    statusDiv.innerHTML += `<div>${pair[0]}: ${pair[1]}</div>`;
+                }
+            }
+            
+            try {
+                statusDiv.innerHTML += '<div>Sending request to server...</div>';
+                
+                const response = await fetch('http://localhost:4000/api/product/add', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                resultDiv.style.display = 'block';
+                
+                if (response.ok) {
+                    statusDiv.innerHTML += '<div class="success">Upload successful!</div>';
+                } else {
+                    statusDiv.innerHTML += '<div class="error">Upload failed!</div>';
+                }
+                
+                resultDiv.innerHTML = `
+                    <h3>Server Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                statusDiv.innerHTML += `<div class="error">Error: ${error.message}</div>`;
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <h3>Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        };
+    </script>
+</body>
+</html> 

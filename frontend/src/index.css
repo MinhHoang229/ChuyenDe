@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.input {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-gray-700 placeholder-gray-400 transition;
+}
+.input {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black transition text-sm text-gray-700 placeholder-gray-400;
+}
+
+
+
+
+  /* *{
+    font-family: Outfit;
+  }
+   */
+a.active hr{
+    display: block;
+}
+
+::-webkit-scrollbar{
+  display: none;
+}
+
+@media (max-width: 640px) {
+  a.active hr{
+    background-color: black;
+    color: white;
+  }
+}
