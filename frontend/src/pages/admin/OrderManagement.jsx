@@ -1,37 +1,74 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ShopContext } from '../context/ShopContext';
+import { ShopContext } from '../../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import Title from '../components/Title';
 
-const Orders = () => {
+const OrderManagement = () => {
     const { token, currency, backendUrl } = useContext(ShopContext);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axios.get(
-                    `${backendUrl}/api/order/user-orders`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` }
-                    }
-                );
-
-                if (response.data.success) {
-                    setOrders(response.data.orders);
-                }
-            } catch (error) {
-                console.error('Lỗi khi lấy danh sách đơn hàng:', error);
-                toast.error('Không thể tải danh sách đơn hàng');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchOrders();
     }, [token, backendUrl]);
+
+    const fetchOrders = async () => {
+        try {
+            const response = await axios.get(
+                `${backendUrl}/api/order/all`,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            if (response.data.success) {
+                setOrders(response.data.orders);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy danh sách đơn hàng:', error);
+            toast.error('Không thể tải danh sách đơn hàng');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleStatusChange = async (orderId, newStatus) => {
+        try {
+            const response = await axios.put(
+                `${backendUrl}/api/order/status/${orderId}`,
+                { status: newStatus },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            if (response.data.success) {
+                toast.success('Cập nhật trạng thái đơn hàng thành công');
+                fetchOrders(); // Refresh orders list
+            }
+        } catch (error) {
+            console.error('Lỗi khi cập nhật trạng thái:', error);
+            toast.error('Không thể cập nhật trạng thái đơn hàng');
+        }
+    };
+
+    const handleDeleteOrder = async (orderId) => {
+        try {
+            const response = await axios.delete(`${backendUrl}/api/order/${orderId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.data.success) {
+                toast.success('Xóa đơn hàng thành công');
+                fetchOrders(); // Refresh the orders list
+            }
+        } catch (error) {
+            console.error('Error deleting order:', error);
+            toast.error('Lỗi khi xóa đơn hàng');
+        }
+    };
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -50,6 +87,14 @@ const Orders = () => {
         }
     };
 
+    const statusOptions = [
+        'Đang xử lý',
+        'Đã xác nhận',
+        'Đang giao hàng',
+        'Đã giao hàng',
+        'Đã hủy'
+    ];
+
     if (loading) {
         return (
             <div className="container mx-auto px-4 py-8">
@@ -60,11 +105,11 @@ const Orders = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-6">Đơn hàng của tôi</h1>
+            <h1 className="text-2xl font-bold mb-6">Quản lý đơn hàng</h1>
 
             {orders.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                    Bạn chưa có đơn hàng nào
+                    Chưa có đơn hàng nào
                 </div>
             ) : (
                 <div className="space-y-6">
@@ -78,10 +123,21 @@ const Orders = () => {
                                     <p className="text-sm text-gray-500">
                                         Ngày đặt: {new Date(order.createdAt).toLocaleDateString('vi-VN')}
                                     </p>
+                                    <p className="text-sm text-gray-500">
+                                        Khách hàng: {order.userName}
+                                    </p>
                                 </div>
-                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                                    {order.status}
-                                </span>
+                                <select
+                                    value={order.status}
+                                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)} cursor-pointer border-0 focus:ring-2 focus:ring-indigo-500`}
+                                >
+                                    {statusOptions.map((status) => (
+                                        <option key={status} value={status}>
+                                            {status}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="border-t border-b py-4 mb-4">
@@ -131,4 +187,4 @@ const Orders = () => {
     );
 };
 
-export default Orders;
+export default OrderManagement; 

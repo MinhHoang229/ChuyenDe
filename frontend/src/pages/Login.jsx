@@ -8,14 +8,13 @@ const Login = () => {
   const navigate = useNavigate();
   const [currentState, setCurrentState] = useState('Login');
   const [loading, setLoading] = useState(false);
-  const { token, setToken, backendUrl } = useContext(ShopContext);
+  const { token, setToken, backendUrl ,setUserName} = useContext(ShopContext);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
 
-  // Kiểm tra token và chuyển hướng nếu đã đăng nhập
   useEffect(() => {
     if (token) {
       navigate('/');
@@ -55,10 +54,11 @@ const Login = () => {
         });
         if (response.data.success) {
           setToken(response.data.token);
-          localStorage.setItem('token', response.data.token);
-          toast.success('Đăng ký thành công!');
+          setUserName(response.data.user.name); // ✅ Sử dụng context
+          toast.success('Đăng nhập thành công!');
           navigate('/');
-        } else {
+        }
+         else {
           toast.error(response.data.message || 'Đăng ký thất bại');
         }
       } else {
@@ -69,6 +69,7 @@ const Login = () => {
         if (response.data.success) {
           setToken(response.data.token);
           localStorage.setItem('token', response.data.token);
+          localStorage.setItem('userName', response.data.user.name);
           toast.success('Đăng nhập thành công!');
           navigate('/');
         } else {
