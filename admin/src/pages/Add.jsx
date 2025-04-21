@@ -103,14 +103,14 @@ const Add = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Add New Product</h1>
+      <h1 className="text-2xl font-bold mb-6">Thêm sản phẩm mới</h1>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Product Information */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <label className="block text-sm font-medium text-gray-700">Tên sản phẩm</label>
               <input
                 type="text"
                 value={formData.name}
@@ -121,7 +121,7 @@ const Add = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <label className="block text-sm font-medium text-gray-700">Mô tả</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -132,7 +132,7 @@ const Add = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Price</label>
+              <label className="block text-sm font-medium text-gray-700">Giá</label>
               <input
                 type="number"
                 value={formData.price}
@@ -143,37 +143,37 @@ const Add = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Category</label>
+              <label className="block text-sm font-medium text-gray-700">Danh mục</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               >
-                <option value="">Select Category</option>
-                <option value="Men">Men</option>
-                <option value="Women">Women</option>
-                <option value="Kids">Kids</option>
+                <option value="">Chọn danh mục</option>
+                <option value="Men">Nam</option>
+                <option value="Women">Nữ</option>
+                <option value="Kids">Trẻ em</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Sub Category</label>
+              <label className="block text-sm font-medium text-gray-700">Loại sản phẩm</label>
               <select
                 value={formData.subCategory}
                 onChange={(e) => setFormData({...formData, subCategory: e.target.value})}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               >
-                <option value="">Select Sub Category</option>
-                <option value="Topwear">Topwear</option>
-                <option value="Bottomwear">Bottomwear</option>
-                <option value="Winterwear">Winterwear</option>
+                <option value="">Chọn loại sản phẩm</option>
+                <option value="Topwear">Áo Thun</option>
+                <option value="Bottomwear">Quần</option>
+                <option value="Winterwear">Áo Khoác</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Size</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Kích cỡ</label>
               <div className="flex gap-4">
                 {sizes.map((size) => (
                   <button

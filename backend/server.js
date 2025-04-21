@@ -7,6 +7,8 @@ import userRouter from './routers/userRoute.js';
 import productRouter from './routers/productRoute.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cartRouter from './routers/cartRoute.js';
+import orderRouter from './routers/orderRoute.js';
 
 // Get directory name
 const __filename = fileURLToPath(import.meta.url);
@@ -50,6 +52,8 @@ connectCloudinary();
 // Routes
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
+app.use('/api/cart', cartRouter);
+app.use('/api/order', orderRouter);
 
 // API routes
 app.get('/', (req, res) => {
