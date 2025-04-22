@@ -153,7 +153,7 @@ const Add = () => {
                 <option value="">Chọn danh mục</option>
                 <option value="Men">Nam</option>
                 <option value="Women">Nữ</option>
-                <option value="Kids">Trẻ em</option>
+                <option value="Kids">Các loại</option>
               </select>
             </div>
 
@@ -169,6 +169,7 @@ const Add = () => {
                 <option value="Topwear">Áo Thun</option>
                 <option value="Bottomwear">Quần</option>
                 <option value="Winterwear">Áo Khoác</option>
+                <option value="Accessories">Phụ kiện</option>
               </select>
             </div>
 

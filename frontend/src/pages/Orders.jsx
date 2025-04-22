@@ -1,134 +1,84 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ShopContext } from '../context/ShopContext';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import Title from '../components/Title';
+import React, { useContext } from 'react'
+import { ShopContext } from '../context/ShopContext'
+import Title from '../components/Title'
 
 const Orders = () => {
-    const { token, currency, backendUrl } = useContext(ShopContext);
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { products, currency, cartItems } = useContext(ShopContext);
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axios.get(
-                    `${backendUrl}/api/order/user-orders`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` }
-                    }
-                );
+    // Chuyển đổi cartItems thành mảng orders
+    const orders = Object.entries(cartItems).map(([productId, sizes]) => {
+        const product = products.find(p => p._id === productId);
+        if (!product) return null;
 
-                if (response.data.success) {
-                    setOrders(response.data.orders);
-                }
-            } catch (error) {
-                console.error('Lỗi khi lấy danh sách đơn hàng:', error);
-                toast.error('Không thể tải danh sách đơn hàng');
-            } finally {
-                setLoading(false);
-            }
-        };
+        return Object.entries(sizes).map(([size, quantity]) => ({
+            id: productId,
+            name: product.name,
+            price: product.price,
+            image: product.image?.[0] || 'https://via.placeholder.com/300x300?text=No+Image',
+            size: size,
+            quantity: quantity,
+            totalPrice: product.price * quantity
+        }));
+    }).flat().filter(Boolean);
 
-        fetchOrders();
-    }, [token, backendUrl]);
-
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'Đang xử lý':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'Đã xác nhận':
-                return 'bg-blue-100 text-blue-800';
-            case 'Đang giao hàng':
-                return 'bg-purple-100 text-purple-800';
-            case 'Đã giao hàng':
-                return 'bg-green-100 text-green-800';
-            case 'Đã hủy':
-                return 'bg-red-100 text-red-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
-        }
-    };
-
-    if (loading) {
+    if (orders.length === 0) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-center">Đang tải...</div>
+            <div className='border-t pt-14'>
+                <div className='text-2xl mb-3'>
+                    <Title text1={'Đơn'} text2={'Hàng'} />
+                </div>
+                <div className='text-center py-10'>
+                    <p className='text-gray-500'>Bạn chưa có đơn hàng nào</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-6">Đơn hàng của tôi</h1>
-
-            {orders.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                    Bạn chưa có đơn hàng nào
-                </div>
-            ) : (
-                <div className="space-y-6">
-                    {orders.map((order) => (
-                        <div key={order._id} className="bg-white rounded-lg shadow-md p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <p className="text-sm text-gray-500">
-                                        Mã đơn hàng: {order._id}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                        Ngày đặt: {new Date(order.createdAt).toLocaleDateString('vi-VN')}
-                                    </p>
+        <div className='border-t pt-14'>
+            <div className='text-2xl mb-3'>
+                <Title text1={'Đơn'} text2={'Hàng'} />
+            </div>
+            <div className='max-w-7xl mx-auto px-4'>
+                <div className='space-y-4'>
+                    {orders.map((order, index) => (
+                        <div key={index} className='border rounded-lg p-4 hover:shadow-md transition-shadow'>
+                            <div className='flex items-start gap-6'>
+                                <div className='relative w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded'>
+                                    <img 
+                                        src={order.image} 
+                                        alt={order.name}
+                                        className='w-full h-full object-cover'
+                                        onError={(e) => {
+                                            e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
+                                        }}
+                                    />
                                 </div>
-                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                                    {order.status}
-                                </span>
-                            </div>
-
-                            <div className="border-t border-b py-4 mb-4">
-                                {order.products.map((item, index) => (
-                                    <div key={index} className="flex items-center justify-between py-2">
-                                        <div className="flex items-center gap-4">
-                                            <img
-                                                src={item.image || 'placeholder.jpg'}
-                                                alt={item.name}
-                                                className="w-16 h-16 object-cover rounded"
-                                            />
-                                            <div>
-                                                <p className="font-medium">{item.name}</p>
-                                                <p className="text-sm text-gray-600">
-                                                    Size: {item.size} x {item.quantity}
-                                                </p>
+                                <div className='flex-1'>
+                                    <div className='flex justify-between items-start'>
+                                        <div>
+                                            <h3 className='font-medium text-lg'>{order.name}</h3>
+                                            <div className='mt-1 space-y-1 text-sm text-gray-500'>
+                                                <p>Size: {order.size}</p>
+                                                <p>Số lượng: {order.quantity}</p>
+                                                <p>Đơn giá: {currency}{order.price.toLocaleString('vi-VN')}</p>
                                             </div>
                                         </div>
-                                        <p className="font-medium">
-                                            {currency}{(item.price * item.quantity).toLocaleString('vi-VN')}
-                                        </p>
+                                        <div className='text-right'>
+                                            <p className='text-lg font-medium text-indigo-600'>
+                                                {currency}{order.totalPrice.toLocaleString('vi-VN')}
+                                            </p>
+                                            <p className='mt-1 text-sm text-green-600'>Đang xử lý</p>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
-
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Địa chỉ giao hàng:</span>
-                                    <span>{order.shippingAddress.address}, {order.shippingAddress.city}</span>
-                                </div>
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Số điện thoại:</span>
-                                    <span>{order.shippingAddress.phone}</span>
-                                </div>
-                                <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                                    <span>Tổng cộng:</span>
-                                    <span className="text-indigo-600">
-                                        {currency}{order.totalAmount.toLocaleString('vi-VN')}
-                                    </span>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
-            )}
+            </div>
         </div>
-    );
-};
+    )
+}
 
-export default Orders;
+export default Orders

@@ -14,7 +14,7 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [userName, setUserName] = useState(() => localStorage.getItem('userName') || '');
-  const [currency] = useState('đ');
+  const [currency, setCurrency] = useState('₫');
   const [deliveryFee] = useState(10);
   const backendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
   const [search, setSearch] = useState('');

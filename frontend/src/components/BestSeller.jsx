@@ -25,7 +25,7 @@ const BestSeller = () => {
     return (
         <div className='my-10'>
             <div className='text-center text-3xl py-8'>
-                <Title text1={'Best'} text2='Seller' />
+                <Title text1={'Sản phẩm'} text2='bán chạy nhất' />
                 <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
                     Những sản phẩm bán chạy nhất của chúng tôi
                 </p>
